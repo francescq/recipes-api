@@ -1,0 +1,4 @@
+{
+    "migrate": "docker-compose run app sh -c 'python manage.py migrate'",
+    "test:watch": "watchmedo shell-command --wait --recursive --command='python app/manage.py test'"
+}
