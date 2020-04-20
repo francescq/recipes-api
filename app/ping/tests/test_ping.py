@@ -14,8 +14,6 @@ class TestPing(TestCase):
         self.client = APIClient()
 
     def test_should_return_pong(self):
-        print(PING_URL)
         res = self.client.get(PING_URL)
 
-        print(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
