@@ -67,7 +67,22 @@ class RecipesApi(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertDictEqual(res.data, {
-            'id': 4,
+            'id': 5,
             'name': 'name0',
             'description': 'description0'
         })
+
+    def test_should_return_404(self):
+        notExistingId = 999
+        url = detail_url(notExistingId)
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_should_delete_the_recipe(self):
+        recipeToDelete = create_fake_recipe()
+
+        url = detail_url(recipeToDelete.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
