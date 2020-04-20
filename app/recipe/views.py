@@ -6,5 +6,12 @@ from recipe import serializers
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.RecipeSerializer
     queryset = Recipe.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.RecipeListSerializer
+        else:
+            return serializers.RecipeDetailSerializer
+
+        return self.serializer_class

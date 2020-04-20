@@ -10,15 +10,17 @@ from rest_framework.test import APIClient
 RECIPES_URL = reverse('recipes:recipe-list')
 
 
+def detail_url(recipe_id):
+    return reverse('recipes:recipe-detail', args=[recipe_id])
+
+
 def create_fake_recipe(num=0):
     recipe = {
         "name": f'name{num}',
         "description": f'description{num}'
     }
 
-    Recipe.objects.create(**recipe)
-
-    return recipe
+    return Recipe.objects.create(**recipe)
 
 
 class RecipesApi(TestCase):
@@ -33,8 +35,14 @@ class RecipesApi(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 2)
-        self.assertEqual(res.data[0]['name'], 'name0')
-        self.assertEqual(res.data[1]['name'], 'name1')
+        self.assertDictEqual(dict(res.data[0]), {
+            'name': 'name0',
+            'description': 'description0'
+        })
+        self.assertDictEqual(dict(res.data[1]), {
+            'name': 'name1',
+            'description': 'description1'
+        })
 
     def test_should_create_a_recipe(self):
         newRecipe = {
@@ -45,5 +53,21 @@ class RecipesApi(TestCase):
         res = self.client.post(RECIPES_URL, newRecipe)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res.data['name'], 'new recipe')
-        self.assertEqual(res.data['description'], 'description new recipe')
+        self.assertDictEqual(res.data, {
+            'id': 3,
+            'name': 'new recipe',
+            'description': 'description new recipe'
+        })
+
+    def test_should_get_the_recipe_detail(self):
+        recipeToRetrieve = create_fake_recipe()
+
+        url = detail_url(recipeToRetrieve.id)
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.data, {
+            'id': 4,
+            'name': 'name0',
+            'description': 'description0'
+        })
